@@ -11,10 +11,11 @@ namespace CastleGrimtol
       Console.Clear();
       GameService gameService = new GameService();
       gameService.Setup();
-      Console.WriteLine("Welcome to Adventure Time!");
+      Console.WriteLine("Welcome to Adventure!");
       Console.WriteLine("Lets Play!");
-      Console.Write("Enter Player Name to Begin :");
-      string PlayerName = Console.ReadLine();
+      Console.Write("Enter Player Name to Begin:");
+      string playerName = Console.ReadLine();
+      gameService.CurrentPlayer = new Player(playerName);
       gameService.StartGame();
     }
   }

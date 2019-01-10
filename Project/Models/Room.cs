@@ -9,24 +9,34 @@ namespace CastleGrimtol.Project.Models
     public string Description { get; set; }
     public List<Item> Items { get; set; }
     public Dictionary<string, IRoom> Exits { get; set; }
-    public Room(string name, string description)
+    public bool LockedRoom { get; set; }
+    public Room(string name, string description, bool lockedroom = false)
     {
       Name = name;
       Description = description;
+      LockedRoom = lockedroom;
       Items = new List<Item>();
       Exits = new Dictionary<string, IRoom>();
     }
     public IRoom ChangeRoom(string direction)
     {
-      if (Exits.ContainsKey(direction))
+      if (!Exits.ContainsKey(direction))
       {
-        return Exits[direction];
+        System.Console.WriteLine("Sorry, you cannot go in that direction. Try another way.\n");
       }
       else
       {
-        System.Console.WriteLine("not a valid room");
+        IRoom room = Exits[direction];
+        if (room.LockedRoom == true)
+        {
+          System.Console.WriteLine("Sorry this door is locked. Go find the key.");
+        }
+        else
+        {
+          return room;
+        }
       }
-      return null; //this returns the room that called ChangeRoom in the case that there isn't an exit that direction
+      return this; //this returns the room that called ChangeRoom in the case that there isn't an exit that direction
     }
   }
 
