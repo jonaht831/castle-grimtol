@@ -70,7 +70,7 @@ namespace CastleGrimtol.Project
       Options -- 
        'help' draws a list of possible commands
        'go' requires a direction 'north', 'south', 'east', 'west'
-       'look' redraws the room description
+       'look' redraws the area's description
        'take' requires an 'item' to take and adds it to your inventory
        'use' requires an 'item' to use
        'inventory' shows the item you currently have in your inventory
@@ -113,10 +113,10 @@ namespace CastleGrimtol.Project
     public void Setup()
     {
       //Creates each Room
-      Room cy = new Room("Courtyard", "You're in an open courtyard with 3 doors. There appears to be an shiny ancient arifact in the center, \n\tbut it is protected inside a large cage");
+      Room cy = new Room("Courtyard", "You're in an open courtyard with 3 doors to the north, east and west. \n\tThere appears to be an shiny ancient arifact in the center, \n\tbut it is protected inside a large cage");
       Room tc = new Room("Treasure Chamber", "You're in a dimmly light chamber filled with gold treasures, precious gems, and rather ordinary looking chest. \n\tInside the chest lies a large ornate key.");
       Room pt = new Room("Pharoh's Tomb", "You're in a dark cob-web filled chamber with a single sarcophagus decorated in golden hieroglyphs. \n\tTwo large mirrors reflect the moonlight and cause the sarcophagus to glow with a golden hue. \n\tA peculiar rope hangs from the ceiling..", true);
-      Room sc = new Room("Star Chamber", "You're in a chamber with a large opening in the ceiling. \n\tAllowing a clear view of the night sky and illuminating the many scrolls and texts piled in the chamber");
+      Room sc = new Room("Star Chamber", "You're in a chamber with a large opening in the ceiling. \n\tAllowing a clear view of the night sky, also illuminating the many scrolls and texts piled in the chamber");
       Room ent = new Room("Entrance", "After a long journey you have finally reached the home of Adventure.\n\tDirectly to your north stands the door to Adventures Keep");
 
       //Creates each Exit
