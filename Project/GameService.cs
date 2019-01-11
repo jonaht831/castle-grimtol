@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using CastleGrimtol.Project.Interfaces;
 using CastleGrimtol.Project.Models;
 
@@ -11,6 +12,7 @@ namespace CastleGrimtol.Project
 
     public Player CurrentPlayer { get; set; }
     private bool playing = true;
+
     public void GetUserInput()
     {
       var choice = Console.ReadLine();
@@ -57,7 +59,7 @@ namespace CastleGrimtol.Project
       //CurrentRoom.Exits.ContainsKey("north")
       Console.Clear();
       CurrentRoom = CurrentRoom.ChangeRoom(direction);
-      Console.WriteLine(CurrentRoom.Description);
+      Console.WriteLine("\n\t" + CurrentRoom.Description);
 
 
     }
@@ -65,9 +67,9 @@ namespace CastleGrimtol.Project
     public void Help()
     {
       Console.WriteLine(@"
-      Options --
+      Options -- 
        'help' draws a list of possible commands
-       'go' takes a direction 'north', 'south', 'east', 'west'
+       'go' requires a direction 'north', 'south', 'east', 'west'
        'look' redraws the room description
        'take' requires an 'item' to take and adds it to your inventory
        'use' requires an 'item' to use
@@ -87,7 +89,8 @@ namespace CastleGrimtol.Project
 
     public void Look()
     {
-      Console.WriteLine(CurrentRoom.Description);
+      Console.Clear();
+      Console.WriteLine("\n\t" + CurrentRoom.Description);
     }
 
     public void Quit()
@@ -110,26 +113,27 @@ namespace CastleGrimtol.Project
     public void Setup()
     {
       //Creates each Room
-      Room cy = new Room("Courtyard", "\nYoure in an open courtyard with 3 doors. There appears to be an shiny ancient arifact in the center, but it is protected inside a large cage");
-      Room tc = new Room("Treasure Chamber", "You're in a dimmly light chamber filled with gold treasures, precious gems, and rather ordinary looking chest. Inside the chest lies a large ornate key.");
-      Room pt = new Room("Pharoh's Tomb", "You're in a dark cob-web filled chamber with a single sarcophagus decorated with shining metals and hieroglyphs", true);
-      Room sc = new Room("Star Chamber", "You're in a chamber with a large opening in the ceiling. Allowing a clear view of the night sky and illuminating the many scrolls and texts piled in the chamber");
-      Room ent = new Room("Entrance", "You're in a chamber with torchs mounted on the walls. Directly in front of you stands the door to Adventures Keep");
+      Room cy = new Room("Courtyard", "You're in an open courtyard with 3 doors. There appears to be an shiny ancient arifact in the center, \n\tbut it is protected inside a large cage");
+      Room tc = new Room("Treasure Chamber", "You're in a dimmly light chamber filled with gold treasures, precious gems, and rather ordinary looking chest. \n\tInside the chest lies a large ornate key.");
+      Room pt = new Room("Pharoh's Tomb", "You're in a dark cob-web filled chamber with a single sarcophagus decorated in golden hieroglyphs. \n\tTwo large mirrors reflect the moonlight and cause the sarcophagus to glow with a golden hue. \n\tA peculiar rope hangs from the ceiling..", true);
+      Room sc = new Room("Star Chamber", "You're in a chamber with a large opening in the ceiling. \n\tAllowing a clear view of the night sky and illuminating the many scrolls and texts piled in the chamber");
+      Room ent = new Room("Entrance", "After a long journey you have finally reached the home of Adventure.\n\tDirectly to your north stands the door to Adventures Keep");
 
       //Creates each Exit
       cy.Exits.Add("west", tc);
       cy.Exits.Add("north", pt);
       cy.Exits.Add("east", sc);
+      cy.Exits.Add("south", ent);
       tc.Exits.Add("east", cy);
       pt.Exits.Add("south", cy);
       sc.Exits.Add("west", cy);
       ent.Exits.Add("north", cy);
 
       //Creates each Item
-      Item art = new Item("Ancient Artifact", "A shiny golden treasure");
-      Item key = new Item("Key", "An unknown key");
-      Item rope = new Item("Rope", "A mysterious rope hanging from the ceiling");
-      Item lever = new Item("Lever", "A dangerous looking lever on the wall");
+      Item art = new Item("artifact", "A shiny golden treasure", true);
+      Item key = new Item("key", "A key to an unknown door");
+      Item rope = new Item("rope", "A mysterious rope hanging from the ceiling");
+      Item lever = new Item("lever", "A dangerous looking lever on the wall");
       //Adds each Item to a Room
       cy.Items.Add(art);
       tc.Items.Add(key);
@@ -142,13 +146,14 @@ namespace CastleGrimtol.Project
     public void StartGame()
     {
       Console.Clear();
-      Console.WriteLine(CurrentRoom.Description);
+      Console.WriteLine("\n\t" + CurrentRoom.Description);
+      Help();
       while (playing)
       {
-        Help();
-        System.Console.WriteLine("What do you do?");
+        System.Console.WriteLine("\n        What do you do?");
         GetUserInput();
       }
+      Console.Clear();
       System.Console.WriteLine("GoodBye");
     }
 
@@ -157,7 +162,8 @@ namespace CastleGrimtol.Project
       Item foundItem = CurrentRoom.Items.Find(item => item.Name.ToLower() == itemName.ToLower());
       if (foundItem != null)
       {
-        Console.WriteLine($"'{itemName}' has been added to your Inventory");
+        Console.Clear();
+        Console.WriteLine($"The {itemName} has been added to your Inventory");
         CurrentRoom.Items.Remove(foundItem);
         CurrentPlayer.Inventory.Add(foundItem);
       }
@@ -168,19 +174,34 @@ namespace CastleGrimtol.Project
     }
     public void UseItem(string itemName)
     {
-      Item useableItem = CurrentPlayer.Inventory.Find(item => item.Name.ToLower() == itemName.ToLower());
-      if (useableItem == null)
+      Item roomItem = CurrentRoom.Items.Find(item => item.Name == itemName);
+      if (roomItem == null)
       {
-        System.Console.WriteLine("That item does not exist");
-      }
-      else
-      {
+        Item useableItem = CurrentPlayer.Inventory.Find(item => item.Name == itemName);
+        if (useableItem == null)
+        {
+          System.Console.WriteLine("invalid item");
+          return;
+        }
         if (CurrentRoom.Name == "Courtyard")
         {
           CurrentRoom.Exits["north"].LockedRoom = false;
-          System.Console.WriteLine("You used the key to unlock the northern door.");
+          Console.Clear();
+          Console.WriteLine("\n\tYou used the key to unlock the northern door.");
         }
       }
+      else
+      {
+        CurrentRoom.Exits["south"].Items[0].Locked = false;
+        Console.Clear();
+        CurrentRoom.Exits["south"].Description = "\n\tYou're now back in the courtyard. The cage is suspended high in the air exposing the shiny golden artifact! \n\tGrab it and escape the keep!";
+        System.Console.WriteLine("\n\tAfter pulling the rope, you hear the sound of chains in the courtyard.");
+      }
+    }
+    public void WinGame()
+    {
+      Console.WriteLine("You succeeded in escaping Adventure's Keep! Way to GO!");
+      Quit();
     }
   }
 }

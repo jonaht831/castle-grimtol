@@ -7,11 +7,13 @@ namespace CastleGrimtol.Project.Models
   {
     public string Name { get; set; }
     public string Description { get; set; }
+    public bool Locked { get; set; }
 
-    public Item(string name, string description)
+    public Item(string name, string description, bool locked = false)
     {
       Name = name;
       Description = description;
+      Locked = locked;
     }
   }
 }

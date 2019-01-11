@@ -6,6 +6,7 @@ namespace CastleGrimtol.Project.Interfaces
   {
     string Name { get; set; }
     string Description { get; set; }
+    bool Locked { get; set; }
 
   }
 }

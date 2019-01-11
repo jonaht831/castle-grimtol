@@ -22,14 +22,14 @@ namespace CastleGrimtol.Project.Models
     {
       if (!Exits.ContainsKey(direction))
       {
-        System.Console.WriteLine("Sorry, you cannot go in that direction. Try another way.\n");
+        System.Console.WriteLine("\n\tSorry, you cannot go in that direction. Try another way.\n");
       }
       else
       {
         IRoom room = Exits[direction];
         if (room.LockedRoom == true)
         {
-          System.Console.WriteLine("Sorry this door is locked. Go find the key.");
+          System.Console.WriteLine("\n\tSorry this door is locked. Go find the key.");
         }
         else
         {
