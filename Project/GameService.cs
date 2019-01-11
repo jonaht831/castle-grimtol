@@ -59,14 +59,17 @@ namespace CastleGrimtol.Project
       //CurrentRoom.Exits.ContainsKey("north")
       Console.Clear();
       CurrentRoom = CurrentRoom.ChangeRoom(direction);
+      WinGame();
       Console.WriteLine("\n\t" + CurrentRoom.Description);
-
-
     }
 
     public void Help()
     {
       Console.WriteLine(@"
+                  />________________________________
+        [########[]_________________________________>
+                  \>
+
       Options -- 
        'help' draws a list of possible commands
        'go' requires a direction 'north', 'south', 'east', 'west'
@@ -200,8 +203,28 @@ namespace CastleGrimtol.Project
     }
     public void WinGame()
     {
-      Console.WriteLine("You succeeded in escaping Adventure's Keep! Way to GO!");
-      Quit();
+      if (CurrentRoom.Name == "Entrance")
+      {
+        Item item = CurrentPlayer.Inventory.Find(i => i.Name == "artifact");
+        if (item != null)
+        {
+          Console.WriteLine("You succeeded in escaping Adventure's Keep! Way to GO!");
+          Console.WriteLine("Would you like to play again? yes/no");
+          string response = Console.ReadLine().ToLower();
+          if (response == "yes")
+          {
+            StartGame();
+          }
+          else if (response == "no")
+          {
+            Quit();
+          }
+        }
+        else
+        {
+          System.Console.WriteLine("you lose");
+        }
+      }
     }
   }
 }
