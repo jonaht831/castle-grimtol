@@ -22,7 +22,7 @@ namespace CastleGrimtol.Project.Models
     {
       if (!Exits.ContainsKey(direction))
       {
-        System.Console.WriteLine("\n\tSorry, you cannot go in that direction. Try another way.\n");
+        System.Console.WriteLine("\n\tSorry, you cannot go in that direction. \n\tTry another way.");
       }
       else
       {

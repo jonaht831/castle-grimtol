@@ -45,6 +45,9 @@ namespace CastleGrimtol.Project
         case "use":
           UseItem(option);
           break;
+        case "pull":
+          UseItem(option);
+          break;
         case "reset":
           Reset();
           break;
@@ -59,6 +62,11 @@ namespace CastleGrimtol.Project
       //CurrentRoom.Exits.ContainsKey("north")
       Console.Clear();
       CurrentRoom = CurrentRoom.ChangeRoom(direction);
+      //if in second room => go find winning item description
+      if (CurrentRoom.Name == "Courtyard")
+      {
+        CurrentRoom.Exits["south"].Description = "\n\tYou have left Adventure's Keep with out retrieving the Artifact you've been searching for! \n\tGo back and continue your search!";
+      }
       WinGame();
       Console.WriteLine("\n\t" + CurrentRoom.Description);
     }
@@ -66,8 +74,8 @@ namespace CastleGrimtol.Project
     public void Help()
     {
       Console.WriteLine(@"
-                  />________________________________
-        [########[]_________________________________>
+                  />_________________________________
+        [########[]_________________________________/
                   \>
 
       Options -- 
@@ -76,6 +84,7 @@ namespace CastleGrimtol.Project
        'look' redraws the area's description
        'take' requires an 'item' to take and adds it to your inventory
        'use' requires an 'item' to use
+       'pull' requires and 'item' to pull 
        'inventory' shows the item you currently have in your inventory
        'reset' starts a new game
        'quit' ends the game");
@@ -105,7 +114,7 @@ namespace CastleGrimtol.Project
     {
       Console.Clear();
       Setup();
-      Console.WriteLine("Welcome to Adventure Game!");
+      Console.WriteLine("Welcome to Adventure!");
       Console.WriteLine("Lets Play!");
       Console.Write("Enter Player Name to Begin:");
       string playerName = Console.ReadLine();
@@ -119,7 +128,7 @@ namespace CastleGrimtol.Project
       Room cy = new Room("Courtyard", "You're in an open courtyard with 3 doors to the north, east and west. \n\tThere appears to be an shiny ancient arifact in the center, \n\tbut it is protected inside a large cage");
       Room tc = new Room("Treasure Chamber", "You're in a dimmly light chamber filled with gold treasures, precious gems, and rather ordinary looking chest. \n\tInside the chest lies a large ornate key.");
       Room pt = new Room("Pharoh's Tomb", "You're in a dark cob-web filled chamber with a single sarcophagus decorated in golden hieroglyphs. \n\tTwo large mirrors reflect the moonlight and cause the sarcophagus to glow with a golden hue. \n\tA peculiar rope hangs from the ceiling..", true);
-      Room sc = new Room("Star Chamber", "You're in a chamber with a large opening in the ceiling. \n\tAllowing a clear view of the night sky, also illuminating the many scrolls and texts piled in the chamber");
+      Room sc = new Room("Star Chamber", "You're in a chamber with a large opening in the ceiling. \n\tAllowing a clear view of the night sky, also illuminating the many scrolls and texts piled in the chamber. \n\tA trapdoor lies on the floor");
       Room ent = new Room("Entrance", "After a long journey you have finally reached the home of Adventure.\n\tDirectly to your north stands the door to Adventures Keep");
 
       //Creates each Exit
@@ -136,12 +145,13 @@ namespace CastleGrimtol.Project
       Item art = new Item("artifact", "A shiny golden treasure", true);
       Item key = new Item("key", "A key to an unknown door");
       Item rope = new Item("rope", "A mysterious rope hanging from the ceiling");
-      Item lever = new Item("lever", "A dangerous looking lever on the wall");
+      Item trap = new Item("trapdoor", "A trap door leading down into the darkness");
+
       //Adds each Item to a Room
       cy.Items.Add(art);
       tc.Items.Add(key);
       pt.Items.Add(rope);
-      sc.Items.Add(lever);
+      sc.Items.Add(trap);
       CurrentRoom = ent;
 
     }
@@ -165,6 +175,12 @@ namespace CastleGrimtol.Project
       Item foundItem = CurrentRoom.Items.Find(item => item.Name.ToLower() == itemName.ToLower());
       if (foundItem != null)
       {
+        if (itemName == "rope" || itemName == "trapdoor")
+        {
+          Console.Clear();
+          Console.WriteLine("\n\tSorry, you cannot take that Item");
+          return;
+        }
         Console.Clear();
         Console.WriteLine($"The {itemName} has been added to your Inventory");
         CurrentRoom.Items.Remove(foundItem);
@@ -172,7 +188,7 @@ namespace CastleGrimtol.Project
       }
       else
       {
-        System.Console.WriteLine("item not found");
+        System.Console.WriteLine("\n\titem not found");
       }
     }
     public void UseItem(string itemName)
@@ -195,21 +211,47 @@ namespace CastleGrimtol.Project
       }
       else
       {
-        CurrentRoom.Exits["south"].Items[0].Locked = false;
-        Console.Clear();
-        CurrentRoom.Exits["south"].Description = "\n\tYou're now back in the courtyard. The cage is suspended high in the air exposing the shiny golden artifact! \n\tGrab it and escape the keep!";
-        System.Console.WriteLine("\n\tAfter pulling the rope, you hear the sound of chains in the courtyard.");
-      }
-    }
-    public void WinGame()
-    {
-      if (CurrentRoom.Name == "Entrance")
-      {
-        Item item = CurrentPlayer.Inventory.Find(i => i.Name == "artifact");
-        if (item != null)
+        //rope or trapdoor
+        //if roomItem.name == rope
+        if (roomItem.Name == "rope")
         {
-          Console.WriteLine("You succeeded in escaping Adventure's Keep! Way to GO!");
-          Console.WriteLine("Would you like to play again? yes/no");
+          CurrentRoom.Exits["south"].Items[0].Locked = false;
+          Console.Clear();
+          CurrentRoom.Exits["south"].Description = "\n\tYou're now back in the courtyard. The cage is suspended high in the air exposing the shiny golden artifact! \n\tGrab it and escape the keep!";
+          System.Console.WriteLine("\n\tAfter pulling the rope, you hear the sound of chains in the courtyard.");
+        }
+        else if (roomItem.Name == "trapdoor")
+        {
+
+          Console.Clear();
+          Console.WriteLine(@"
+                            ,--.
+                           {    }
+                           K,   }
+                          /  ~Y`
+                     ,   /   /          At the bottom of the trapdoor was a pit filled with spikes!
+                    {_'-K.__/           You have fallen to your Death!
+                      `/-.__L._         
+                      /  ' /`\_}        Would you like to Try Again? yes/no ?
+                     /  ' /
+             ____   /  ' /
+      ,-'~~~~    ~~/  ' /_
+    ,'             ``~~~  ',
+   (                        Y
+  {                         I
+ {      -                    `,
+ |       ',                   )
+ |        |   ,..__      __. Y
+ |    .,_./  Y ' / ^Y   J   )|
+ \           |' /   |   |   ||
+  \          L_/    . _ (_,.'(
+   \,   ,      ^^"" / |      )
+     \_  \          /,L]     /
+       '-_~-,       ` `   ./`
+          `'{_            )
+              ^^\..___,.--`    
+            
+        ");
           string response = Console.ReadLine().ToLower();
           if (response == "yes")
           {
@@ -220,9 +262,27 @@ namespace CastleGrimtol.Project
             Quit();
           }
         }
-        else
+      }
+    }
+    public void WinGame()
+    {
+      if (CurrentRoom.Name == "Entrance")
+      {
+        Item item = CurrentPlayer.Inventory.Find(i => i.Name == "artifact");
+        if (item != null)
         {
-          System.Console.WriteLine("you lose");
+          Console.WriteLine("\n\tYou succeeded in escaping Adventure's Keep! Way to GO!");
+          Console.WriteLine("\n\tWould you like to play again? yes/no");
+          string response = Console.ReadLine().ToLower();
+          if (response == "yes")
+          {
+            Reset();
+            StartGame();
+          }
+          else if (response == "no")
+          {
+            Quit();
+          }
         }
       }
     }
