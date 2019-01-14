@@ -167,7 +167,7 @@ namespace CastleGrimtol.Project
         GetUserInput();
       }
       Console.Clear();
-      System.Console.WriteLine("GoodBye");
+      System.Console.WriteLine("\n\tGoodBye");
     }
 
     public void TakeItem(string itemName)
