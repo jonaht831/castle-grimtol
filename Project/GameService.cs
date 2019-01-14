@@ -182,7 +182,7 @@ namespace CastleGrimtol.Project
           return;
         }
         Console.Clear();
-        Console.WriteLine($"The {itemName} has been added to your Inventory");
+        Console.WriteLine($"\n\tThe {itemName} has been added to your Inventory");
         CurrentRoom.Items.Remove(foundItem);
         CurrentPlayer.Inventory.Add(foundItem);
       }
@@ -271,8 +271,29 @@ namespace CastleGrimtol.Project
         Item item = CurrentPlayer.Inventory.Find(i => i.Name == "artifact");
         if (item != null)
         {
-          Console.WriteLine("\n\tYou succeeded in escaping Adventure's Keep! Way to GO!");
-          Console.WriteLine("\n\tWould you like to play again? yes/no");
+          Console.WriteLine(@"
+                  /|                                                                              
+              /\/ |/\                                                                             
+              \  ^   | /\  /\                                                                     
+        (\/\  / ^   /\/  )/^ )                                                                    
+         \  \/^ /\       ^  /           You have succeeded in escaping Adventure's Keep!                                              
+          )^       ^ \     (                  Well Done!                                              
+         (   ^   ^      ^\  )                                                                     
+          \___\/____/______/                                                                       
+          [________________]                                                                      
+           |              |                                                                       
+           |     //\\     |             Would you like to play again? yes/no ?                                                    
+           |    <<()>>    |                                                                       
+           |     \\//     |                                                                       
+            \____________/                                                                        
+                |    |                                                                            
+                |    |                                                                            
+                |    |                                                                            
+                |    |                                                                            
+                |    |                                                                            
+                |    |                                                                            
+                |    |                                                                            
+          ");
           string response = Console.ReadLine().ToLower();
           if (response == "yes")
           {
