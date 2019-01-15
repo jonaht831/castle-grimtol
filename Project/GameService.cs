@@ -129,7 +129,7 @@ namespace CastleGrimtol.Project
       Room tc = new Room("Treasure Chamber", "You're in a dimmly light chamber filled with gold treasures, precious gems, and rather ordinary looking chest. \n\tInside the chest lies a large ornate key.");
       Room pt = new Room("Pharoh's Tomb", "You're in a dark cob-web filled chamber with a single sarcophagus decorated in golden hieroglyphs. \n\tTwo large mirrors reflect the moonlight and cause the sarcophagus to glow with a golden hue. \n\tA peculiar rope hangs from the ceiling..", true);
       Room sc = new Room("Star Chamber", "You're in a chamber with a large opening in the ceiling. \n\tAllowing a clear view of the night sky, also illuminating the many scrolls and texts piled in the chamber. \n\tA trapdoor lies on the floor");
-      Room ent = new Room("Entrance", "After a long journey you have finally reached the home of Adventure.\n\tDirectly to your north stands the door to Adventures Keep");
+      Room ent = new Room("Entrance", "After a long journey you have finally reached the home of Adventure. \n\tDirectly to your north stands the door to Adventures Keep \n\tGo inside and retrieve the priceless Artifact you've been searching for.");
 
       //Creates each Exit
       cy.Exits.Add("west", tc);
@@ -175,12 +175,13 @@ namespace CastleGrimtol.Project
       Item foundItem = CurrentRoom.Items.Find(item => item.Name.ToLower() == itemName.ToLower());
       if (foundItem != null)
       {
-        if (itemName == "rope" || itemName == "trapdoor")
+        if (itemName == "rope" || itemName == "trapdoor" || foundItem.Locked)
         {
           Console.Clear();
-          Console.WriteLine("\n\tSorry, you cannot take that Item");
+          Console.WriteLine("\n\tSorry, you cannot take that Item \n\tIt is either protected at the moment or unavailable");
           return;
         }
+
         Console.Clear();
         Console.WriteLine($"\n\tThe {itemName} has been added to your Inventory");
         CurrentRoom.Items.Remove(foundItem);
@@ -215,7 +216,10 @@ namespace CastleGrimtol.Project
         //if roomItem.name == rope
         if (roomItem.Name == "rope")
         {
-          CurrentRoom.Exits["south"].Items[0].Locked = false;
+          if (CurrentRoom.Exits["south"].Items.Count > 0)
+          {
+            CurrentRoom.Exits["south"].Items[0].Locked = false;
+          }
           Console.Clear();
           CurrentRoom.Exits["south"].Description = "\n\tYou're now back in the courtyard. The cage is suspended high in the air exposing the shiny golden artifact! \n\tGrab it and escape the keep!";
           System.Console.WriteLine("\n\tAfter pulling the rope, you hear the sound of chains in the courtyard.");
